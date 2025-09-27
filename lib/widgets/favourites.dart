@@ -2,56 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:swaralipi/widgets/viewer_card.dart';
 
-class SongList extends StatefulWidget {
-  final List<SongModel> songs;
-  final void Function(SongModel song, List<SongModel> playlist, int index)
-  onSongTap;
-  const SongList({super.key, required this.songs, required this.onSongTap});
+class FavouriteList extends StatefulWidget {
+  final List<PlaylistModel> favourites;
+  const FavouriteList({super.key, required this.favourites});
 
   @override
-  State<SongList> createState() => _SongListState();
+  State<FavouriteList> createState() => _FavouriteListState();
 }
 
-class _SongListState extends State<SongList> {
+class _FavouriteListState extends State<FavouriteList> {
   int selected = 0;
-
-  String _formatDuration(int? milliseconds) {
-    if (milliseconds == null) return "--:--";
-    final duration = Duration(milliseconds: milliseconds);
-    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return "$minutes:$seconds";
-  }
 
   @override
   Widget build(BuildContext context) {
     return ViewCard(
-      showEmpty: widget.songs.isEmpty,
+      showEmpty: widget.favourites.isEmpty,
       emptytitle: "No Songs Found",
-      emptyMessage: "You don't have any song",
+      emptyMessage: "You din't added any song yet",
       header: ViewCardHeader(
         actions: [
-          ViewCardAction(icon: Icons.shuffle, onPressed: () {}),
-          ViewCardAction(icon: Icons.play_arrow, onPressed: () {}),
+          ViewCardAction(icon: Icons.add, onPressed: () {}),
+          ViewCardAction(icon: Icons.info_outline, onPressed: () {}),
         ],
       ),
       body: ListView.separated(
-        itemCount: widget.songs.length,
+        itemCount: widget.favourites.length,
         separatorBuilder: (context, index) =>
             Divider(height: 1, color: Colors.white.withAlpha(30)),
         itemBuilder: (context, i) {
           return GestureDetector(
-            // onTap: () => {
-            //   setState(() => selected = i),
-
-            //   Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => PlayerScreen(song: widget.songs[i]),
-            //     ),
-            //   ),
-            // },
-            onTap: () => widget.onSongTap(widget.songs[i], widget.songs, i),
+            onTap: () => setState(() => selected = i),
             child: SizedBox(
               height: 60,
               child: Row(
@@ -59,8 +39,8 @@ class _SongListState extends State<SongList> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: QueryArtworkWidget(
-                      id: widget.songs[i].id,
-                      type: ArtworkType.AUDIO,
+                      id: widget.favourites[i].id,
+                      type: ArtworkType.PLAYLIST,
                       artworkBorder: BorderRadius
                           .zero, // since you're already using ClipRRect
                       nullArtworkWidget: Container(
@@ -82,7 +62,7 @@ class _SongListState extends State<SongList> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.songs[i].displayName.toString(),
+                          widget.favourites[i].playlist.toString(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -92,18 +72,13 @@ class _SongListState extends State<SongList> {
                           ),
                         ),
                         Text(
-                          '${widget.songs[i].album} - ${widget.songs[i].artist}',
+                          '${widget.favourites[i].numOfSongs} Songs',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(color: Colors.white.withAlpha(120)),
                         ),
                       ],
                     ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    _formatDuration(widget.songs[i].duration),
-                    style: TextStyle(color: Colors.white.withAlpha(160)),
                   ),
                 ],
               ),
